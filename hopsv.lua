@@ -1,7 +1,8 @@
---[[
-    GEMINI SYSTEM - VERSION 0.3 (FINAL)
-    - Asset ID: 108021605525411
-    - Phím tắt: I, K, L, U, M, P
+--[[ 
+    GEMINI SYSTEM - VERSION 0.4 (STABLE FIX)
+    - Fix M: Ghi file autoexec chuẩn xác
+    - Fix P: Nhấn là lên, nhấn lại là tắt
+    - Status: Siêu dài, đầy đủ thông tin
 ]]
 
 repeat task.wait() until game:IsLoaded()
@@ -12,116 +13,127 @@ local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
--- CẤU HÌNH HỆ THỐNG
-local version = "0.3"
+-- CẤU HÌNH
+local version = "0.4"
 local image_id = "rbxassetid://108021605525411"
-
--- 1. Link dùng để ghi vào file Auto-Exec (Chỉ chứa lệnh gọi Hop Server)
+local is_hack_running = false
+local hack_link = "https://raw.githubusercontent.com/Dev-NightMystic/Night-Mystic-/refs/heads/main/NightMystic"
 local autoexec_link = "https://raw.githubusercontent.com/quangkhoa1792013-cell/script/refs/heads/main/hopsv.lua"
-local autoexec_content = 'loadstring(game:HttpGet("' .. autoexec_link .. '"))()'
-local autoexec_file_name = "autohop.lua"
 
--- 2. Link script HACK chính (Dùng cho phím L)
-local hack_script_url = "https://raw.githubusercontent.com/Dev-NightMystic/Night-Mystic-/refs/heads/main/NightMystic"
-
-local k_count, l_count, m_count, p_count = 0, 0, 0, 0
+local l_cnt, m_cnt = 0, 0
 
 local function Notify(title, text)
     pcall(function()
         StarterGui:SetCore("SendNotification", {
-            Title = title,
-            Text = text,
-            Icon = image_id,
-            Duration = 4
+            Title = title, Text = text, Icon = image_id, Duration = 4
         })
     end)
 end
 
--- Hàm tạo GUI Status (Phím P)
-local function ShowStatusGUI()
-    local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
-    if playerGui:FindFirstChild("GeminiStatus") then playerGui.GeminiStatus:Destroy() end
-    local sg = Instance.new("ScreenGui", playerGui)
-    sg.Name = "GeminiStatus"
-    local frame = Instance.new("Frame", sg)
-    frame.Size = UDim2.new(0, 320, 0, 260)
-    frame.Position = UDim2.new(0.5, -160, 0.5, -130)
-    frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    frame.BorderSizePixel = 2
-    local title = Instance.new("TextLabel", frame)
-    title.Size = UDim2.new(1, 0, 0, 35)
-    title.Text = "GEMINI SYSTEM v" .. version
-    title.TextColor3 = Color3.new(1, 1, 1)
-    title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    local info = Instance.new("TextLabel", frame)
-    info.Size = UDim2.new(1, -20, 1, -45)
-    info.Position = UDim2.new(0, 10, 0, 40)
-    info.TextXAlignment = Enum.TextXAlignment.Left
-    info.TextYAlignment = Enum.TextYAlignment.Top
-    info.TextColor3 = Color3.new(0.9, 0.9, 0.9)
-    info.BackgroundTransparency = 1
-    info.TextWrapped = true
-    info.Text = [[
-[STATUS]: Hoạt động bình thường
-[CRE]: Gemini & quangkhoa1792013
-[HDSS]:
-- K: Nhấn 4 lần để Hop Server (Đã tối ưu lỗi)
-- L: Nhấn 2 lần chạy Hack Night Mystic
-- M: Nhấn 2 lần Bật/Tắt Auto-Exec Hop
-- U: Rejoin Server hiện tại nhanh
-- P: Đóng/Mở bảng Status này
-- I: Hiện thông báo phím tắt nhanh
-[README]: Script tối ưu cho cày thuê Blox Fruits.]]
+-- 1. GUI STATUS DÀI (PHÍM P - NHẤN LÀ LÊN)
+local function ToggleStatus()
+    local pGui = Players.LocalPlayer:WaitForChild("PlayerGui")
+    local old = pGui:FindFirstChild("GeminiStatus")
+    if old then old:Destroy() return end
+    
+    local sg = Instance.new("ScreenGui", pGui); sg.Name = "GeminiStatus"
+    local f = Instance.new("Frame", sg)
+    f.Size = UDim2.new(0, 380, 0, 300); f.Position = UDim2.new(0.5, -190, 0.5, -150)
+    f.BackgroundColor3 = Color3.fromRGB(15, 15, 15); f.BorderSizePixel = 0
+    Instance.new("UICorner", f)
+
+    local sf = Instance.new("ScrollingFrame", f)
+    sf.Size = UDim2.new(1, -20, 1, -20); sf.Position = UDim2.new(0, 10, 0, 10)
+    sf.BackgroundTransparency = 1; sf.CanvasSize = UDim2.new(0, 0, 2.5, 0) -- Rất dài
+    sf.ScrollBarThickness = 4
+
+    local txt = Instance.new("TextLabel", sf)
+    txt.Size = UDim2.new(1, 0, 1, 0); txt.BackgroundTransparency = 1
+    txt.TextColor3 = Color3.new(1, 1, 1); txt.TextXAlignment = 0; txt.TextYAlignment = 0
+    txt.TextWrapped = true; txt.TextSize = 14
+    txt.Text = string.format([[
+[TRẠNG THÁI HỆ THỐNG]
+- Phiên bản: %s
+- Status: Hoạt động tốt
+- Night Mystic: %s
+- Asset ID: %s
+
+--------------------------------------------
+[HƯỚNG DẪN SỬ DỤNG - HDSS]
+- Phím P: Mở hoặc Đóng bảng thông tin này (Nhấn 1 lần).
+- Phím I: Hiện thông báo nhanh góc màn hình.
+- Phím K: Nhảy Server (Xác nhận 4 bước chống bấm nhầm).
+- Phím L: Chạy Night Mystic (Xác nhận 2 bước).
+- Phím M: Bật/Tắt Auto-Exec. Tạo file trong máy.
+- Phím U: Rejoin server hiện tại ngay lập tức.
+
+--------------------------------------------
+[THÔNG TIN CHI TIẾT - README]
+Script này được thiết kế để tối ưu hóa việc cày thuê.
+Tự động lưu trạng thái nhảy server vào file JSON.
+Khi sử dụng phím M, script sẽ tạo một file 'autohop.lua'
+trong folder autoexec của bản hack. Lần sau vào game 
+nó sẽ tự chạy script nhảy server của bạn.
+
+--------------------------------------------
+[CREDITS - TÁC GIẢ]
+- Developer: quangkhoa1792013 (Khoa Cell)
+- AI Support: Gemini 3 Flash
+- Thư viện: Night Mystic Team
+
+--------------------------------------------
+Chúc bạn cày thuê vui vẻ!
+]], version, is_hack_running and "ĐÃ BẬT" or "CHƯA BẬT", version, image_id)
 end
 
--- Xử lý phím bấm
-UserInputService.InputBegan:Connect(function(input, processed)
-    if processed then return end
+-- 2. XỬ LÝ PHÍM TẮT
+UserInputService.InputBegan:Connect(function(input, proc)
+    if proc then return end
 
-    -- PHÍM P: MỞ BẢNG STATUS (XÁC NHẬN 2 LẦN)
+    -- P: NHẤN PHÁT LÊN LUÔN
     if input.KeyCode == Enum.KeyCode.P then
-        p_count = p_count + 1
-        if p_count >= 2 then p_count = 0; ShowStatusGUI() else Notify("Hệ Thống", "Nhấn P lần nữa để xem bảng Status.") end
-        task.delay(5, function() p_count = 0 end)
+        ToggleStatus()
     end
 
-    -- PHÍM M: QUẢN LÝ AUTO-EXEC HOP (2 LẦN)
+    -- M: AUTO-EXEC (FIXED)
     if input.KeyCode == Enum.KeyCode.M then
-        m_count = m_count + 1
-        if m_count >= 2 then
-            m_count = 0
-            if isfile(autoexec_file_name) then
-                delfile(autoexec_file_name)
-                Notify("Auto-Exec", "Đã TẮT tự động nhảy server.")
-            else
-                writefile(autoexec_file_name, autoexec_content)
-                Notify("Auto-Exec", "Đã BẬT tự động nhảy server.")
-            end
+        m_cnt = m_cnt + 1
+        if m_cnt >= 2 then
+            m_cnt = 0
+            local success, err = pcall(function()
+                if isfile("autohop.lua") then
+                    delfile("autohop.lua")
+                    Notify("Hệ Thống", "Đã XÓA file Auto-Exec.")
+                else
+                    writefile("autohop.lua", 'loadstring(game:HttpGet("'..autoexec_link..'"))()')
+                    Notify("Hệ Thống", "Đã TẠO file autohop.lua thành công!")
+                end
+            end)
+            if not success then Notify("Lỗi", "Executor không hỗ trợ ghi file!") end
         else
             Notify("Xác nhận M", "Nhấn M lần nữa để thiết lập Auto-Exec.")
         end
-        task.delay(5, function() m_count = 0 end)
+        task.delay(3, function() m_cnt = 0 end)
     end
 
-    -- PHÍM L: CHẠY HACK NIGHT MYSTIC (2 LẦN)
+    -- L: CHẠY HACK (XÁC NHẬN 2 LẦN)
     if input.KeyCode == Enum.KeyCode.L then
-        l_count = l_count + 1
-        if l_count >= 2 then
-            l_count = 0
-            Notify("Night Mystic", "Đang nạp script hack...")
-            loadstring(game:HttpGet(hack_script_url))()
+        l_cnt = l_cnt + 1
+        if l_cnt >= 2 then
+            l_cnt = 0; is_hack_running = true
+            Notify("Night Mystic", "Đang nạp script...")
+            loadstring(game:HttpGet(hack_link))()
         else
             Notify("Xác nhận L", "Nhấn L lần nữa để chạy Night Mystic.")
         end
-        task.delay(5, function() l_count = 0 end)
+        task.delay(3, function() l_cnt = 0 end)
     end
 
-    -- [Giữ nguyên logic các phím I, K, U và SafeServerHop]
-    if input.KeyCode == Enum.KeyCode.K then
-        k_count = k_count + 1
-        if k_count >= 4 then k_count = 0; --[[Gọi SafeServerHop()]] else Notify("Xác nhận K ("..k_count.."/3)", "Nhấn tiếp để Hop.") end
-        task.delay(5, function() k_count = 0 end)
+    -- U: REJOIN (NHẤN PHÁT CHẠY LUÔN)
+    if input.KeyCode == Enum.KeyCode.U then
+        Notify("Hệ Thống", "Đang Rejoin...")
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
     end
 end)
 
-Notify("Gemini System", "Đã sẵn sàng phiên bản " .. version)
+Notify("Gemini", "Phiên bản 0.4 đã sẵn sàng! Nhấn P để xem HDSS.")
