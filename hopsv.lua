@@ -1,5 +1,5 @@
 --[[ 
-    GEMINI SYSTEM - VERSION 0.4 (STABLE FIX)
+    KHOADZ HOP SERVER - VERSION 0.4 (STABLE FIX)
     - Fix M: Ghi file autoexec chuẩn xác
     - Fix P: Nhấn là lên, nhấn lại là tắt
     - Status: Siêu dài, đầy đủ thông tin
@@ -33,10 +33,10 @@ end
 -- 1. GUI STATUS DÀI (PHÍM P - NHẤN LÀ LÊN)
 local function ToggleStatus()
     local pGui = Players.LocalPlayer:WaitForChild("PlayerGui")
-    local old = pGui:FindFirstChild("GeminiStatus")
+    local old = pGui:FindFirstChild("ScriptStatus")
     if old then old:Destroy() return end
     
-    local sg = Instance.new("ScreenGui", pGui); sg.Name = "GeminiStatus"
+    local sg = Instance.new("ScreenGui", pGui); sg.Name = "ScriptStatus"
     local f = Instance.new("Frame", sg)
     f.Size = UDim2.new(0, 380, 0, 300); f.Position = UDim2.new(0.5, -190, 0.5, -150)
     f.BackgroundColor3 = Color3.fromRGB(15, 15, 15); f.BorderSizePixel = 0
@@ -77,10 +77,7 @@ nó sẽ tự chạy script nhảy server của bạn.
 
 --------------------------------------------
 [CREDITS - TÁC GIẢ]
-- Developer: quangkhoa1792013 (Khoa Cell)
-- AI Support: Gemini 3 Flash
-- Thư viện: Night Mystic Team
-
+- Developer: Khoathichlaptrinh
 --------------------------------------------
 Chúc bạn cày thuê vui vẻ!
 ]], version, is_hack_running and "ĐÃ BẬT" or "CHƯA BẬT", version, image_id)
@@ -136,4 +133,4 @@ UserInputService.InputBegan:Connect(function(input, proc)
     end
 end)
 
-Notify("Gemini", "Phiên bản 0.4 đã sẵn sàng! Nhấn P để xem HDSS.")
+Notify("KhoaDZ", "Phiên bản 0.4 đã sẵn sàng! Nhấn P để xem HDSS.")
