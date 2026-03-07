@@ -21,7 +21,7 @@ local TweenService = game:GetService("TweenService")
 local version = "0.6"
 local image_id = "rbxassetid://108021605525411"
 local is_hack_running = false
-local hack_link = "https://raw.githubusercontent.com/Dev-NightMystic/Night-Mystic-/refs/heads/main/3209277401661639.lua.txt"
+local hack_link = "https://raw.githubusercontent.com/Dev-NightMystic/Night-Mystic-/refs/heads/main/3209277401661639.lua.txt" -- dit me thg hoang do do lo me di ly hieu oi
 local autoexec_link = "https://raw.githubusercontent.com/quangkhoa1792013-cell/script/refs/heads/main/hopsv.lua"
 
 -- Biến bộ đếm và thời gian
