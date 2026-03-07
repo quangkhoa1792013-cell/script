@@ -1,11 +1,6 @@
 --[[ 
     KHOADZ SYSTEM - VERSION 0.6 (PLATINUM EDITION - ULTIMATE TROLL)
-    - Fix Logic: Reset bộ đếm sau 5s nếu không nhấn phím.
-    - Fix Performance: Loại bỏ delay thông báo, phản hồi tức thì.
-    - Fix Feedback: Thêm thông báo "Thành công" khi thực thi xong.
-    - Troll Skip: Nút giả bay xa, nút thật ở góc dưới bên phải.
-    - Animation: Thêm hiệu ứng Tween cho toàn bộ giao diện (Loading & Menu).
-    - Credits: Khoa
+    - LO NGAY CHO TAO
 ]]
 
 repeat task.wait() until game:IsLoaded()
