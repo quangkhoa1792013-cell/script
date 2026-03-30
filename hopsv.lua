@@ -1,5 +1,5 @@
 --[[ 
-    KHOADZ SYSTEM - VERSION 1.0 (PLATINUM EDITION - ULTIMATE TROLL)
+    KHOADZ SYSTEM - VERSION 1.2 (PLATINUM EDITION - ULTIMATE TROLL)
     - LO NGAY CHO TAO
 ]]
 
@@ -16,7 +16,7 @@ local TweenService = game:GetService("TweenService")
 local version = "0.6"
 local image_id = "rbxassetid://108021605525411"
 local is_hack_running = false
-local hack_link = "https://raw.githubusercontent.com/Dev-NightMystic/Night-Mystic-/refs/heads/main/NightMystic" -- dit me thg hoang do do lo me di ly hieu oi
+local hack_link = "https://raw.githubusercontent.com/Dev-NightMystic/Bloxfruits/refs/heads/main/Script.lua" 
 local autoexec_link = "https://raw.githubusercontent.com/quangkhoa1792013-cell/script/refs/heads/main/hopsv.lua"
 
 -- Biến bộ đếm và thời gian
@@ -45,7 +45,7 @@ local function UpdateCount(key_name)
     return counts[key_name]
 end
 
--- HÀM HIỆU ỨNG LOADING CHỌC TỨC (VERSION 50S + ANIMATION)
+-- HÀM HIỆU ỨNG LOADING CHỌC TỨC (GIỮ Y NGUYÊN ANIMATION CỦA BẠN)
 local function StartLoading()
     local player = Players.LocalPlayer
     local pGui = player:WaitForChild("PlayerGui")
@@ -58,11 +58,11 @@ local function StartLoading()
     local overlay = Instance.new("Frame", sg)
     overlay.Size = UDim2.new(1, 0, 1, 0)
     overlay.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
-    overlay.BackgroundTransparency = 1 -- Bắt đầu từ trong suốt để lướt vào
+    overlay.BackgroundTransparency = 1 
     overlay.ZIndex = 1
 
     local main = Instance.new("Frame", sg)
-    main.Size = UDim2.new(0, 0, 0, 0) -- Bắt đầu từ kích thước 0
+    main.Size = UDim2.new(0, 0, 0, 0) 
     main.Position = UDim2.new(0.5, 0, 0.5, 0)
     main.AnchorPoint = Vector2.new(0.5, 0.5)
     main.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
@@ -71,7 +71,6 @@ local function StartLoading()
     Instance.new("UICorner", main)
     Instance.new("UIStroke", main).Color = Color3.fromRGB(0, 255, 255)
 
-    -- Animation xuất hiện
     TweenService:Create(overlay, TweenInfo.new(0.5), {BackgroundTransparency = 0.5}):Play()
     main:TweenSize(UDim2.new(0, 380, 0, 180), "Out", "Back", 0.5, true)
 
@@ -117,7 +116,6 @@ local function StartLoading()
     local function FinishLoading()
         if is_skipped then return end
         is_skipped = true
-        -- Animation biến mất
         TweenService:Create(overlay, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
         TweenService:Create(skipFake, TweenInfo.new(0.3), {BackgroundTransparency = 1, TextTransparency = 1}):Play()
         main:TweenSize(UDim2.new(0, 0, 0, 0), "In", "Back", 0.3, true, function()
@@ -129,7 +127,6 @@ local function StartLoading()
     skipReal.MouseButton1Click:Connect(FinishLoading)
 
     task.spawn(function()
-        -- Giai đoạn loading
         for i = 0, 50 do if is_skipped then return end bar:TweenSize(UDim2.new(i/100,0,1,0), "Out", "Linear", 0.1, true); percentTxt.Text = i.."%"; task.wait(0.2) end
         for i = 51, 99 do if is_skipped then return end bar:TweenSize(UDim2.new(i/100,0,1,0), "Out", "Linear", 0.1, true); percentTxt.Text = i.."%"; task.wait(0.2) end
         local st = tick()
@@ -145,29 +142,29 @@ local function StartLoading()
     end)
 end
 
--- 1. KHOADZ HOP SV
+-- 1. KHOADZ HOP SV (Cập nhật để không bị kẹt SV cũ)
 local function ServerHop()
-    Notify("KHOADZ PROGRESS", "Đang tìm server trống...")
+    Notify("KHOADZ PROGRESS", "Đang quét danh sách Server...")
     local PlaceID = game.PlaceId
-    local actualGoodServer = nil
+    local servers = {}
     pcall(function()
         local Site = HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
         for i,v in pairs(Site.data) do
             if v.playing < v.maxPlayers and v.id ~= game.JobId then
-                actualGoodServer = v.id
-                break
+                table.insert(servers, v.id)
             end
         end
     end)
-    if actualGoodServer then
-        Notify("KHOADZ SUCCESS", "Đã tìm thấy! Đang dịch chuyển...")
-        TeleportService:TeleportToPlaceInstance(PlaceID, actualGoodServer, Players.LocalPlayer)
+    
+    if #servers > 0 then
+        Notify("KHOADZ SUCCESS", "Đã tìm thấy! Đang đổi vùng...")
+        TeleportService:TeleportToPlaceInstance(PlaceID, servers[math.random(1, #servers)], Players.LocalPlayer)
     else
-        Notify("KHOADZ ERROR", "Không tìm thấy server. Vui lòng thử lại.")
+        Notify("KHOADZ ERROR", "Không tìm thấy server khác. Vui lòng thử lại.")
     end
 end
 
--- 2. GUI STATUS (FULL ANIMATION)
+-- 2. GUI STATUS (GIỮ Y NGUYÊN)
 local function ToggleStatus()
     local pGui = Players.LocalPlayer:WaitForChild("PlayerGui")
     local old = pGui:FindFirstChild("KhoaDZStatus")
@@ -200,14 +197,14 @@ local function ToggleStatus()
 • Phím <b>K</b>: Hop SV (Nhấn 3 lần).
 • Phím <b>L</b>: Load Script (Nhấn 2 lần).
 • Phím <b>M</b>: Auto-Exec (Nhấn 2 lần).
-• Phím <b>U</b>: Rejoin (Nhấn 2 lần).
+• Phím <b>U</b>: Đổi SV Nhanh (Nhấn 2 lần).
 --------------------------------------------
 Reset bộ đếm sau 5 giây nếu không nhấn tiếp.
 ]])
     f:TweenSize(UDim2.new(0, 400, 0, 300), "Out", "Back", 0.4, true, function() sf.Visible = true end)
 end
 
--- 3. XỬ LÝ PHÍM TẮT
+-- 3. XỬ LÝ PHÍM TẮT (Sửa phím U thành ServerHop)
 UserInputService.InputBegan:Connect(function(input, proc)
     if proc then return end
     local key = input.KeyCode
@@ -249,9 +246,8 @@ UserInputService.InputBegan:Connect(function(input, proc)
         local c = UpdateCount("U")
         if c >= 2 then
             counts.U = 0
-            Notify("KHOADZ SUCCESS", "Đang Rejoin server...")
-            TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
-        else Notify("KHOADZ PROGRESS", "Nhấn U ["..c.."/2] để Rejoin.") end
+            ServerHop() -- Sửa từ Rejoin thành ServerHop để đổi SV thật sự
+        else Notify("KHOADZ PROGRESS", "Nhấn U ["..c.."/2] để đổi Server nhanh.") end
     end
 end)
 
