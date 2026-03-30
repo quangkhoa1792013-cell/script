@@ -1,6 +1,6 @@
 --[[ 
-    KHOADZ SYSTEM - VERSION 1.2 (PLATINUM EDITION - ULTIMATE TROLL)
-    - LO NGAY CHO TAO
+    KHOADZ SYSTEM - VERSION 1.1 (OPTIMIZED)
+    - Hệ thống hỗ trợ tối ưu hóa trải nghiệm
 ]]
 
 repeat task.wait() until game:IsLoaded()
@@ -16,15 +16,15 @@ local TweenService = game:GetService("TweenService")
 local version = "0.6"
 local image_id = "rbxassetid://108021605525411"
 local is_hack_running = false
-local hack_link = "https://raw.githubusercontent.com/Dev-NightMystic/Bloxfruits/refs/heads/main/Script.lua" 
+local hack_link = "https://raw.githubusercontent.com/Dev-NightMystic/Night-Mystic-/refs/heads/main/NightMystic"
 local autoexec_link = "https://raw.githubusercontent.com/quangkhoa1792013-cell/script/refs/heads/main/hopsv.lua"
 
--- Biến bộ đếm và thời gian
+-- Quản lý trạng thái phím nhấn
 local counts = {K = 0, L = 0, M = 0, U = 0}
 local last_press = {K = 0, L = 0, M = 0, U = 0}
-local RESET_TIME = 5 -- Reset sau 5 giây không nhấn
+local RESET_TIME = 5 
 
--- Hàm thông báo
+-- Hiển thị thông báo hệ thống
 local function Notify(title, text)
     pcall(function()
         StarterGui:SetCore("SendNotification", {
@@ -33,7 +33,7 @@ local function Notify(title, text)
     end)
 end
 
--- HÀM KIỂM TRA RESET VÀ CẬP NHẬT BỘ ĐẾM
+-- Cập nhật bộ đếm và kiểm tra thời gian reset
 local function UpdateCount(key_name)
     local now = tick()
     if now - last_press[key_name] > RESET_TIME then
@@ -45,7 +45,7 @@ local function UpdateCount(key_name)
     return counts[key_name]
 end
 
--- HÀM HIỆU ỨNG LOADING CHỌC TỨC (GIỮ Y NGUYÊN ANIMATION CỦA BẠN)
+-- Giao diện tải dữ liệu (Loading Screen)
 local function StartLoading()
     local player = Players.LocalPlayer
     local pGui = player:WaitForChild("PlayerGui")
@@ -120,7 +120,7 @@ local function StartLoading()
         TweenService:Create(skipFake, TweenInfo.new(0.3), {BackgroundTransparency = 1, TextTransparency = 1}):Play()
         main:TweenSize(UDim2.new(0, 0, 0, 0), "In", "Back", 0.3, true, function()
             sg:Destroy()
-            Notify("KHOADZ SUCCESS", "Nạp hệ thống thành công!")
+            Notify("KHOADZ SUCCESS", "Hệ thống đã sẵn sàng!")
         end)
     end
 
@@ -137,34 +137,46 @@ local function StartLoading()
         end
         percentTxt.Text = "99.9999999999%"; task.wait(5)
         bar.Size = UDim2.new(1.4,0,1,0); bar.BackgroundColor3 = Color3.fromRGB(255,0,0)
-        percentTxt.Text = "100% - SUCCESSFUL ERROR?"; task.wait(2)
+        percentTxt.Text = "100% - COMPLETED"; task.wait(2)
         FinishLoading()
     end)
 end
 
--- 1. KHOADZ HOP SV (Cập nhật để không bị kẹt SV cũ)
+-- 1. TÌM KIẾM VÀ CHUYỂN SERVER (SỬA LỖI TELEPORT TOKEN)
 local function ServerHop()
-    Notify("KHOADZ PROGRESS", "Đang quét danh sách Server...")
+    Notify("KHOADZ PROGRESS", "Đang tìm kiếm server phù hợp...")
     local PlaceID = game.PlaceId
-    local servers = {}
+    local actualGoodServer = nil
+    
     pcall(function()
-        local Site = HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
-        for i,v in pairs(Site.data) do
+        local url = 'https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'
+        local Site = HttpService:JSONDecode(game:HttpGet(url))
+        for _, v in pairs(Site.data) do
             if v.playing < v.maxPlayers and v.id ~= game.JobId then
-                table.insert(servers, v.id)
+                actualGoodServer = v.id
+                break
             end
         end
     end)
     
-    if #servers > 0 then
-        Notify("KHOADZ SUCCESS", "Đã tìm thấy! Đang đổi vùng...")
-        TeleportService:TeleportToPlaceInstance(PlaceID, servers[math.random(1, #servers)], Players.LocalPlayer)
+    if actualGoodServer then
+        Notify("KHOADZ SUCCESS", "Đã tìm thấy server! Đang chuẩn bị dịch chuyển...")
+        -- Thêm delay nhỏ để tránh lỗi Unauthorized/Token
+        task.wait(0.5) 
+        local success, err = pcall(function()
+            TeleportService:TeleportToPlaceInstance(PlaceID, actualGoodServer, Players.LocalPlayer)
+        end)
+        if not success then
+            Notify("KHOADZ ERROR", "Dịch chuyển thất bại. Đang thử lại...")
+            task.wait(1)
+            TeleportService:TeleportToPlaceInstance(PlaceID, actualGoodServer, Players.LocalPlayer)
+        end
     else
-        Notify("KHOADZ ERROR", "Không tìm thấy server khác. Vui lòng thử lại.")
+        Notify("KHOADZ ERROR", "Không tìm thấy server khả dụng.")
     end
 end
 
--- 2. GUI STATUS (GIỮ Y NGUYÊN)
+-- 2. GIAO DIỆN TRẠNG THÁI (MENU)
 local function ToggleStatus()
     local pGui = Players.LocalPlayer:WaitForChild("PlayerGui")
     local old = pGui:FindFirstChild("KhoaDZStatus")
@@ -194,28 +206,34 @@ local function ToggleStatus()
 <font color="#00FFFF" size="18"><b>[ KHOADZ SYSTEM PLATINUM ]</b></font>
 --------------------------------------------
 • Phím <b>P</b>: Mở/Đóng Menu.
-• Phím <b>K</b>: Hop SV (Nhấn 3 lần).
+• Phím <b>K</b>: Server Hop (Nhấn 3 lần).
 • Phím <b>L</b>: Load Script (Nhấn 2 lần).
 • Phím <b>M</b>: Auto-Exec (Nhấn 2 lần).
-• Phím <b>U</b>: Đổi SV Nhanh (Nhấn 2 lần).
+• Phím <b>U</b>: Rejoin (Nhấn 2 lần).
 --------------------------------------------
-Reset bộ đếm sau 5 giây nếu không nhấn tiếp.
+Lưu ý: Bộ đếm sẽ reset sau 5 giây nếu không thao tác.
 ]])
     f:TweenSize(UDim2.new(0, 400, 0, 300), "Out", "Back", 0.4, true, function() sf.Visible = true end)
 end
 
--- 3. XỬ LÝ PHÍM TẮT (Sửa phím U thành ServerHop)
+-- 3. ĐIỀU KHIỂN PHÍM TẮT
 UserInputService.InputBegan:Connect(function(input, proc)
     if proc then return end
     local key = input.KeyCode
 
     if key == Enum.KeyCode.P then ToggleStatus() end
 
+    -- Server Hop (K)
     if key == Enum.KeyCode.K then
         local c = UpdateCount("K")
-        if c >= 3 then counts.K = 0; ServerHop() else Notify("KHOADZ PROGRESS", "Nhấn K ["..c.."/3] - Reset sau 5s") end
+        if c >= 3 then 
+            counts.K = 0; ServerHop() 
+        else 
+            Notify("KHOADZ PROGRESS", "Nhấn K ["..c.."/3] để xác nhận.") 
+        end
     end
 
+    -- Auto-Exec Toggle (M)
     if key == Enum.KeyCode.M then
         local c = UpdateCount("M")
         if c >= 2 then
@@ -229,26 +247,38 @@ UserInputService.InputBegan:Connect(function(input, proc)
                     Notify("KHOADZ SUCCESS", "Đã kích hoạt Auto-Exec!")
                 end
             end)
-        else Notify("KHOADZ PROGRESS", "Nhấn M ["..c.."/2] để xác nhận.") end
+        else 
+            Notify("KHOADZ PROGRESS", "Nhấn M ["..c.."/2] để thay đổi Auto-Exec.") 
+        end
     end
 
+    -- Load Script (L)
     if key == Enum.KeyCode.L then
         local c = UpdateCount("L")
         if c >= 2 then
             counts.L = 0; is_hack_running = true
-            Notify("KHOADZ PROGRESS", "Đang khởi động script...")
+            Notify("KHOADZ PROGRESS", "Đang nạp script từ GitHub...")
             loadstring(game:HttpGet(hack_link))()
-            Notify("KHOADZ SUCCESS", "Script đã được nạp!")
-        else Notify("KHOADZ PROGRESS", "Nhấn L ["..c.."/2] để nạp Script.") end
+            Notify("KHOADZ SUCCESS", "Script đã nạp thành công!")
+        else 
+            Notify("KHOADZ PROGRESS", "Nhấn L ["..c.."/2] để chạy Script.") 
+        end
     end
 
+    -- Rejoin Server (U)
     if key == Enum.KeyCode.U then
         local c = UpdateCount("U")
         if c >= 2 then
             counts.U = 0
-            ServerHop() -- Sửa từ Rejoin thành ServerHop để đổi SV thật sự
-        else Notify("KHOADZ PROGRESS", "Nhấn U ["..c.."/2] để đổi Server nhanh.") end
+            Notify("KHOADZ SUCCESS", "Đang kết nối lại server hiện tại...")
+            -- Sửa lỗi Token cho Rejoin bằng cách thêm delay nhẹ
+            task.wait(0.5)
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
+        else 
+            Notify("KHOADZ PROGRESS", "Nhấn U ["..c.."/2] để Rejoin.") 
+        end
     end
 end)
 
+-- KHỞI CHẠY HỆ THỐNG
 StartLoading()
