@@ -13,7 +13,7 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 
 -- CẤU HÌNH HỆ THỐNG
-local version = "0.6"
+local version = "1.1"
 local image_id = "rbxassetid://108021605525411"
 local is_hack_running = false
 local hack_link = "https://raw.githubusercontent.com/Dev-NightMystic/Bloxfruits/refs/heads/main/Script.lua"
