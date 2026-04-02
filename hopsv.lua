@@ -16,7 +16,7 @@ local TweenService = game:GetService("TweenService")
 local version = "1.1"
 local image_id = "rbxassetid://108021605525411"
 local is_hack_running = false
-local hack_link = "https://raw.githubusercontent.com/Dev-NightMystic/Bloxfruits/refs/heads/main/Script.lua"
+local hack_link = "https://raw.githubusercontent.com/Dev-BlueX/BlueX-Hub/refs/heads/main/Main.lua"
 local autoexec_link = "https://raw.githubusercontent.com/quangkhoa1792013-cell/script/refs/heads/main/hopsv.lua"
 
 -- Quản lý trạng thái phím nhấn
