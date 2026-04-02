@@ -258,6 +258,8 @@ UserInputService.InputBegan:Connect(function(input, proc)
         if c >= 2 then
             counts.L = 0; is_hack_running = true
             Notify("KHOADZ PROGRESS", "Đang nạp script từ GitHub...")
+            _G.AutoTranslate = true
+            _G.SaveConfig = true
             loadstring(game:HttpGet(hack_link))()
             Notify("KHOADZ SUCCESS", "Script đã nạp thành công!")
         else 
